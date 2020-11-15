@@ -1,0 +1,82 @@
+Bootstrap: docker
+From: ubuntu:20.04
+Stage: build
+
+%files
+	./geos-3.8.1 /opt/geos
+	
+
+%post
+	apt-get -y update
+	apt-get -y install cmake
+	apt-get -y install libatlas3-base libatlas-base-dev
+	apt-get -y install libblas3 libblas-dev liblapack3 liblapack-dev
+	
+	apt-get -y install python3 python3-pip
+	apt-get -y install git	
+	apt-get -y install proj-bin
+	apt-get -y install libproj-dev build-essential gfortran
+	
+	
+	pip3 install pip --upgrade -i https://pypi.tuna.tsinghua.edu.cn/simple/
+	pip3 install numpy matplotlib pandas scipy astropy moviepy h5py mpmath sympy ipython progressbar -i https://pypi.tuna.tsinghua.edu.cn/simple/
+	
+	
+	cd /opt/geos/
+	mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release ..
+	make
+	make install
+	
+	cd /opt/
+	git clone https://github.com/JohannesBuchner/MultiNest
+	cd MultiNest/build
+	cmake ..
+	make
+	make install 
+	
+	pip3 install pymultinest -i https://pypi.tuna.tsinghua.edu.cn/simple/
+	pip3 install spherical_geometry cartopy -i https://pypi.tuna.tsinghua.edu.cn/simple/
+	
+	cd /usr/local/lib/python3.8/dist-packages/
+	git clone https://github.com/zoujinhang/GECAM_geometry.git
+	git clone https://github.com/zoujinhang/Data_analysis.git
+	git clone https://github.com/zoujinhang/Fermi_tool.git
+	git clone https://github.com/zoujinhang/Calculate_duration.git
+	
+%environment
+
+	export LISTEN_PORT=12345
+	export LC_ALL=C	
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+	export GEOS_DIR=$GEOS_DIR:/usr/local/lib
+	
+	
+%runscript
+	
+	python3
+
+%startscript
+	nc -lp $LISTEN_PORT
+
+
+
+%test
+	grep -q NAME=\"Ubuntu\" /etc/os-release
+	if [ $? -eq 0 ]; then
+		echo "Container base is Ubuntu as expected."
+	else
+		echo "Container base is not Ubuntu."
+	fi
+
+%labels
+	
+	Author Zou J-H
+	version v0.0.0
+
+
+%help
+	
+	this is a container used to product python3 environment of Zou J-H 
+
+
+	
