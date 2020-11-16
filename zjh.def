@@ -7,6 +7,10 @@ Stage: build
 	
 
 %post
+	cd / && mkdir data-share
+	cd / && mkdir savetop
+	cd / && mkdir workcode
+	cd / && mkdir py_lib
 	apt-get -y update
 	apt-get -y install cmake
 	apt-get -y install libatlas3-base libatlas-base-dev
@@ -41,7 +45,6 @@ Stage: build
 	git clone https://github.com/zoujinhang/GECAM_geometry.git
 	git clone https://github.com/zoujinhang/Data_analysis.git
 	git clone https://github.com/zoujinhang/Fermi_tool.git
-	git clone https://github.com/zoujinhang/Calculate_duration.git
 	
 %environment
 
@@ -49,7 +52,7 @@ Stage: build
 	export LC_ALL=C	
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 	export GEOS_DIR=$GEOS_DIR:/usr/local/lib
-	
+	export PYTHONPATH=$PYTHONPATH:/py_lib
 	
 %runscript
 	
